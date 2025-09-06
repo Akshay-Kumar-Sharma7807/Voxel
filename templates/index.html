@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel - Ambient Art Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-card h3 {
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-ok { background-color: #4CAF50; }
+        .status-error { background-color: #f44336; }
+        .status-warning { background-color: #ff9800; }
+
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-stop {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+
+        .output-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .output-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            min-height: 300px;
+        }
+
+        .output-card h3 {
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .log-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 5px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+
+        .log-timestamp {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .log-error { color: #ff6b6b; }
+        .log-success { color: #51cf66; }
+        .log-info { color: #74c0fc; }
+
+        .image-display {
+            text-align: center;
+        }
+
+        .generated-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            margin-top: 10px;
+        }
+
+        .analysis-display {
+            background: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .keyword-tag {
+            background: rgba(255,215,0,0.2);
+            color: #ffd700;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .output-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Voxel</h1>
+            <p>Real-time Ambient Art Generator</p>
+        </div>
+
+        <div class="controls">
+            <div class="status-grid">
+                <div class="status-card">
+                    <h3>System Status</h3>
+                    <div id="audio-status">
+                        <span class="status-indicator status-warning"></span>
+                        Audio: Checking...
+                    </div>
+                    <div id="speech-status">
+                        <span class="status-indicator status-warning"></span>
+                        Speech: Checking...
+                    </div>
+                    <div id="provider-status">
+                        <span class="status-indicator status-warning"></span>
+                        Image Provider: Checking...
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <h3>Controls</h3>
+                    <button id="start-btn" class="btn" onclick="startProcessing()">
+                        🎤 Start Listening
+                    </button>
+                    <button id="stop-btn" class="btn btn-stop" onclick="stopProcessing()" disabled>
+                        ⏹️ Stop
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="output-section">
+            <div class="output-card">
+                <h3>📝 Processing Log</h3>
+                <div class="log-container" id="log-container">
+                    <div class="log-entry log-info">
+                        <span class="log-timestamp">[Ready]</span>
+                        Voxel initialized. Click "Start Listening" to begin.
+                    </div>
+                </div>
+                
+                <div class="analysis-display" id="analysis-display" style="display: none;">
+                    <h4>Analysis Results:</h4>
+                    <div id="transcription"></div>
+                    <div id="sentiment"></div>
+                    <div id="themes"></div>
+                    <div class="keywords" id="keywords"></div>
+                </div>
+            </div>
+
+            <div class="output-card">
+                <h3>🎨 Generated Art</h3>
+                <div class="image-display" id="image-display">
+                    <p>Generated artwork will appear here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let isProcessing = false;
+
+        // Initialize connection
+        socket.on('connect', function() {
+            addLog('Connected to Voxel server', 'success');
+            checkStatus();
+        });
+
+        socket.on('connected', function(data) {
+            addLog(data.message, 'success');
+        });
+
+        // Status updates
+        socket.on('status_update', function(data) {
+            addLog(data.message, 'info');
+        });
+
+        socket.on('transcription', function(data) {
+            addLog(`Transcribed: "${data.text}"`, 'success');
+            document.getElementById('transcription').innerHTML = `<strong>Speech:</strong> ${data.text}`;
+            document.getElementById('analysis-display').style.display = 'block';
+        });
+
+        socket.on('analysis', function(data) {
+            addLog(`Analysis complete - Sentiment: ${data.sentiment}`, 'success');
+            
+            document.getElementById('sentiment').innerHTML = `<strong>Sentiment:</strong> ${data.sentiment} (${(data.confidence * 100).toFixed(1)}%)`;
+            document.getElementById('themes').innerHTML = `<strong>Themes:</strong> ${data.themes.join(', ')}`;
+            
+            const keywordsContainer = document.getElementById('keywords');
+            keywordsContainer.innerHTML = '';
+            data.keywords.forEach(keyword => {
+                const tag = document.createElement('span');
+                tag.className = 'keyword-tag';
+                tag.textContent = keyword;
+                keywordsContainer.appendChild(tag);
+            });
+        });
+
+        socket.on('prompt', function(data) {
+            addLog(`Prompt crafted: "${data.text.substring(0, 50)}..."`, 'success');
+        });
+
+        socket.on('image_generated', function(data) {
+            addLog('🎨 Artwork generated successfully!', 'success');
+            
+            const imageDisplay = document.getElementById('image-display');
+            if (data.filename) {
+                imageDisplay.innerHTML = `
+                    <img src="/images/${data.filename}" alt="Generated Art" class="generated-image">
+                    <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">
+                        Generated at ${new Date().toLocaleTimeString()}
+                    </p>
+                `;
+            } else if (data.url) {
+                imageDisplay.innerHTML = `
+                    <img src="${data.url}" alt="Generated Art" class="generated-image">
+                    <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">
+                        Generated at ${new Date().toLocaleTimeString()}
+                    </p>
+                `;
+            }
+        });
+
+        socket.on('error', function(data) {
+            addLog(`❌ Error: ${data.message}`, 'error');
+        });
+
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('log-container');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            logEntry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span>${message}`;
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function checkStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    updateStatusIndicator('audio-status', data.audio_available, 'Audio');
+                    updateStatusIndicator('speech-status', data.speech_available, 'Speech');
+                    
+                    // Update provider status
+                    let providerName = 'OpenAI';
+                    if (data.image_provider === 'google_cloud') {
+                        providerName = 'Google Cloud';
+                    } else if (data.image_provider === 'freepik') {
+                        providerName = 'Freepik AI';
+                    }
+                    updateStatusIndicator('provider-status', data.provider_configured, `${providerName} Images`);
+                    
+                    if (data.processing_active) {
+                        setProcessingState(true);
+                    }
+                })
+                .catch(error => {
+                    addLog('Failed to check system status', 'error');
+                });
+        }
+
+        function updateStatusIndicator(elementId, isOk, label) {
+            const element = document.getElementById(elementId);
+            const indicator = element.querySelector('.status-indicator');
+            
+            if (isOk) {
+                indicator.className = 'status-indicator status-ok';
+                element.innerHTML = `<span class="status-indicator status-ok"></span>${label}: Ready`;
+            } else {
+                indicator.className = 'status-indicator status-error';
+                element.innerHTML = `<span class="status-indicator status-error"></span>${label}: Not Available`;
+            }
+        }
+
+        function startProcessing() {
+            fetch('/api/start', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        addLog(`Failed to start: ${data.error}`, 'error');
+                    } else {
+                        addLog('🎤 Started ambient art generation', 'success');
+                        setProcessingState(true);
+                    }
+                })
+                .catch(error => {
+                    addLog('Failed to start processing', 'error');
+                });
+        }
+
+        function stopProcessing() {
+            fetch('/api/stop', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    addLog('⏹️ Stopped ambient art generation', 'info');
+                    setProcessingState(false);
+                })
+                .catch(error => {
+                    addLog('Failed to stop processing', 'error');
+                });
+        }
+
+        function setProcessingState(processing) {
+            isProcessing = processing;
+            document.getElementById('start-btn').disabled = processing;
+            document.getElementById('stop-btn').disabled = !processing;
+        }
+
+        // Check status on page load
+        window.addEventListener('load', checkStatus);
+    </script>
+</body>
+</html>
