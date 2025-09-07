@@ -1,11 +1,11 @@
 """
-Image generation module supporting both OpenAI DALL-E and Google Cloud Vertex AI.
+Image generation module supporting multiple providers (OpenAI DALL-E, Google Cloud Vertex AI, Freepik AI).
 """
 
 import os
 import time
-import logging
 import base64
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Dict, Any
@@ -13,29 +13,12 @@ import requests
 
 from ..models import ImagePrompt, GeneratedImage
 from ..config import GenerationConfig, SystemConfig, ErrorConfig
-
-
-logger = logging.getLogger(__name__)
-
-
-class ImageGenerationError(Exception):
-    """Base exception for image generation errors."""
-    pass
-
-
-class APIAuthenticationError(ImageGenerationError):
-    """Raised when API authentication fails."""
-    pass
-
-
-class APIRateLimitError(ImageGenerationError):
-    """Raised when API rate limit is exceeded."""
-    pass
-
-
-class ImageDownloadError(ImageGenerationError):
-    """Raised when image download fails."""
-    pass
+from ..error_handler import ErrorCategory, ErrorSeverity, log_system_event
+from ..exceptions import (
+    ImageGenerationError, APIConnectionError, APIRateLimitError, 
+    APIAuthenticationError, InvalidPromptError, ImageDownloadError
+)
+from ..decorators import handle_errors, log_operation, retry_on_error, validate_config
 
 
 class ImageGenerator:
@@ -54,6 +37,7 @@ class ImageGenerator:
         self.provider = provider or GenerationConfig.PROVIDER
         self.images_dir = SystemConfig.IMAGES_DIR
         self.images_dir.mkdir(exist_ok=True)
+        self.logger = logging.getLogger(__name__)
         
         # Initialize the appropriate client
         if self.provider == "openai":
@@ -65,7 +49,7 @@ class ImageGenerator:
         else:
             raise ValueError(f"Unsupported provider: {self.provider}")
         
-        logger.info(f"ImageGenerator initialized successfully with {self.provider} provider")
+        self.logger.info(f"ImageGenerator initialized successfully with {self.provider} provider")
     
     def _init_openai_client(self, api_key: Optional[str] = None):
         """Initialize OpenAI client."""
@@ -114,9 +98,20 @@ class ImageGenerator:
             "Content-Type": "application/json"
         }
     
+    @handle_errors(
+        category=ErrorCategory.IMAGE_GENERATION,
+        severity=ErrorSeverity.HIGH,
+        raise_on_critical=True
+    )
+    @log_operation(level="INFO", include_args=True)
+    @retry_on_error(
+        max_retries=GenerationConfig.MAX_RETRIES,
+        delay=GenerationConfig.RETRY_DELAY,
+        exceptions=(APIConnectionError, APIRateLimitError)
+    )
     def generate_image(self, prompt: ImagePrompt) -> GeneratedImage:
         """
-        Generate an image using the configured provider with retry logic.
+        Generate an image using the configured provider.
         
         Args:
             prompt: ImagePrompt containing the text prompt and metadata
@@ -125,68 +120,62 @@ class ImageGenerator:
             GeneratedImage with URL, local path, and metadata
             
         Raises:
-            ImageGenerationError: If generation fails after all retries
+            ImageGenerationError: If generation fails
+            APIAuthenticationError: If API authentication fails
+            InvalidPromptError: If prompt is invalid
         """
-        logger.info(f"Starting image generation with {self.provider} for prompt: {prompt.prompt_text[:100]}...")
+        log_system_event(
+            f"Starting image generation with {self.provider}",
+            prompt_preview=prompt.prompt_text[:100]
+        )
         
-        for attempt in range(GenerationConfig.MAX_RETRIES):
-            try:
-                if self.provider == "openai":
-                    response = self._make_openai_call(prompt.prompt_text)
-                    image_url = response['data'][0]['url']
-                    local_path = self._download_image(image_url, prompt.timestamp)
-                    
-                    generated_image = GeneratedImage(
-                        url=image_url,
-                        local_path=str(local_path),
-                        prompt=prompt,
-                        generation_time=datetime.now(),
-                        api_response=response
-                    )
-                    
-                elif self.provider == "google_cloud":
-                    response = self._make_google_cloud_call(prompt.prompt_text)
-                    local_path = self._save_google_cloud_image(response, prompt.timestamp)
-                    
-                    generated_image = GeneratedImage(
-                        url="",  # Google Cloud returns base64, not URL
-                        local_path=str(local_path),
-                        prompt=prompt,
-                        generation_time=datetime.now(),
-                        api_response={"provider": "google_cloud", "success": True}
-                    )
-                
-                elif self.provider == "freepik":
-                    response = self._make_freepik_call(prompt.prompt_text)
-                    local_path = self._save_freepik_image(response, prompt.timestamp)
-                    
-                    generated_image = GeneratedImage(
-                        url="",  # Freepik returns base64, not URL
-                        local_path=str(local_path),
-                        prompt=prompt,
-                        generation_time=datetime.now(),
-                        api_response=response
-                    )
-                
-                logger.info(f"Image saved to: {local_path}")
-                return generated_image
-                
-            except APIRateLimitError as e:
-                logger.warning(f"Rate limit hit on attempt {attempt + 1}: {e}")
-                if attempt < GenerationConfig.MAX_RETRIES - 1:
-                    wait_time = GenerationConfig.RETRY_DELAY * (2 ** attempt)
-                    logger.info(f"Waiting {wait_time} seconds before retry...")
-                    time.sleep(wait_time)
-                else:
-                    raise ImageGenerationError(f"Failed to generate image after {GenerationConfig.MAX_RETRIES} attempts due to rate limiting")
+        if self.provider == "openai":
+            response = self._make_openai_call(prompt.prompt_text)
+            image_url = response['data'][0]['url']
+            local_path = self._download_image(image_url, prompt.timestamp)
             
-            except Exception as e:
-                logger.error(f"Attempt {attempt + 1} failed: {e}")
-                if attempt < GenerationConfig.MAX_RETRIES - 1:
-                    time.sleep(GenerationConfig.RETRY_DELAY)
-                else:
-                    raise ImageGenerationError(f"Failed to generate image after {GenerationConfig.MAX_RETRIES} attempts: {e}")
+            generated_image = GeneratedImage(
+                url=image_url,
+                local_path=str(local_path),
+                prompt=prompt,
+                generation_time=datetime.now(),
+                api_response=response
+            )
+            
+        elif self.provider == "google_cloud":
+            response = self._make_google_cloud_call(prompt.prompt_text)
+            local_path = self._save_google_cloud_image(response, prompt.timestamp)
+            
+            generated_image = GeneratedImage(
+                url="",  # Google Cloud returns base64, not URL
+                local_path=str(local_path),
+                prompt=prompt,
+                generation_time=datetime.now(),
+                api_response={"provider": "google_cloud", "success": True}
+            )
+        
+        elif self.provider == "freepik":
+            response = self._make_freepik_call(prompt.prompt_text)
+            local_path = self._save_freepik_image(response, prompt.timestamp)
+            
+            generated_image = GeneratedImage(
+                url="",  # Freepik returns base64, not URL
+                local_path=str(local_path),
+                prompt=prompt,
+                generation_time=datetime.now(),
+                api_response=response
+            )
+        else:
+            raise ImageGenerationError(
+                f"Unsupported provider: {self.provider}",
+                component="ImageGenerator",
+                additional_data={"provider": self.provider}
+            )
+        
+        log_system_event(f"Image saved to: {local_path}")
+        return generated_image
     
+    @validate_config(["OPENAI_API_KEY"])
     def _make_openai_call(self, prompt_text: str):
         """
         Make API call to OpenAI DALL-E.
@@ -196,6 +185,11 @@ class ImageGenerator:
             
         Returns:
             OpenAI API response dictionary
+            
+        Raises:
+            APIAuthenticationError: If authentication fails
+            APIRateLimitError: If rate limit exceeded
+            InvalidPromptError: If prompt is rejected
         """
         try:
             response = self.client.images.generate(
@@ -214,11 +208,26 @@ class ImageGenerator:
             error_message = str(e).lower()
             
             if "authentication" in error_message or "api key" in error_message:
-                raise APIAuthenticationError(f"OpenAI API authentication failed: {e}")
+                raise APIAuthenticationError(
+                    f"OpenAI API authentication failed: {e}",
+                    component="ImageGenerator"
+                )
             elif "rate limit" in error_message or "quota" in error_message:
-                raise APIRateLimitError(f"OpenAI API rate limit exceeded: {e}")
+                raise APIRateLimitError(
+                    f"OpenAI API rate limit exceeded: {e}",
+                    component="ImageGenerator"
+                )
+            elif "content policy" in error_message or "safety" in error_message:
+                raise InvalidPromptError(
+                    f"Prompt rejected by content policy: {e}",
+                    component="ImageGenerator",
+                    additional_data={"prompt": prompt_text[:100]}
+                )
             else:
-                raise ImageGenerationError(f"OpenAI API call failed: {e}")
+                raise APIConnectionError(
+                    f"OpenAI API call failed: {e}",
+                    component="ImageGenerator"
+                )
     
     def _make_google_cloud_call(self, prompt_text: str):
         """
@@ -346,7 +355,7 @@ class ImageGenerator:
             with open(local_path, 'wb') as f:
                 f.write(image_bytes)
             
-            logger.info(f"Freepik image saved successfully: {local_path}")
+            self.logger.info(f"Freepik image saved successfully: {local_path}")
             return local_path
             
         except Exception as e:
@@ -371,7 +380,7 @@ class ImageGenerator:
             # Save the image directly from the response
             image_response.save(location=str(local_path))
             
-            logger.info(f"Google Cloud image saved successfully: {local_path}")
+            self.logger.info(f"Google Cloud image saved successfully: {local_path}")
             return local_path
             
         except Exception as e:
@@ -397,7 +406,7 @@ class ImageGenerator:
             local_path = self.images_dir / filename
             
             # Download the image
-            logger.info(f"Downloading image from: {image_url}")
+            self.logger.info(f"Downloading image from: {image_url}")
             response = requests.get(image_url, timeout=30)
             response.raise_for_status()
             
@@ -405,7 +414,7 @@ class ImageGenerator:
             with open(local_path, 'wb') as f:
                 f.write(response.content)
             
-            logger.info(f"Image downloaded successfully: {local_path}")
+            self.logger.info(f"Image downloaded successfully: {local_path}")
             return local_path
             
         except requests.exceptions.RequestException as e:
@@ -430,16 +439,16 @@ class ImageGenerator:
             True if the operation should be retried, False otherwise
         """
         if isinstance(error, APIRateLimitError):
-            logger.warning("Rate limit error - will retry with backoff")
+            self.logger.warning("Rate limit error - will retry with backoff")
             return True
         elif isinstance(error, APIAuthenticationError):
-            logger.error("Authentication error - will not retry")
+            self.logger.error("Authentication error - will not retry")
             return False
         elif isinstance(error, ImageDownloadError):
-            logger.warning("Download error - will retry")
+            self.logger.warning("Download error - will retry")
             return True
         else:
-            logger.error(f"Unknown error: {error}")
+            self.logger.error(f"Unknown error: {error}")
             return True  # Default to retry for unknown errors
     
     def cleanup_old_images(self, max_images: int = 50):
@@ -458,9 +467,9 @@ class ImageGenerator:
                 
                 for file_path in files_to_remove:
                     file_path.unlink()
-                    logger.info(f"Removed old image: {file_path}")
+                    self.logger.info(f"Removed old image: {file_path}")
                 
-                logger.info(f"Cleaned up {len(files_to_remove)} old images")
+                self.logger.info(f"Cleaned up {len(files_to_remove)} old images")
         
         except Exception as e:
-            logger.error(f"Failed to cleanup old images: {e}")
+            self.logger.error(f"Failed to cleanup old images: {e}")

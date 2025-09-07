@@ -10,6 +10,14 @@ from pathlib import Path
 # Add the project root to the Python path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # python-dotenv not installed, skip loading .env file
+    pass
+
 from voxel.generation.generator import ImageGenerator
 from voxel.models import ImagePrompt, AnalysisResult
 
@@ -35,12 +43,29 @@ def main():
     """Demonstrate ImageGenerator usage."""
     print("=== Voxel Image Generator Example ===\n")
     
-    # Check for API key
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        print("❌ Error: OPENAI_API_KEY environment variable not set")
-        print("Please set your OpenAI API key:")
-        print("export OPENAI_API_KEY='your-api-key-here'")
+    # Check current provider and API key
+    from voxel.config import GenerationConfig
+    provider = GenerationConfig.PROVIDER
+    print(f"🔧 Current provider: {provider}")
+    
+    # Check for appropriate API key based on provider
+    if provider == "freepik":
+        api_key = GenerationConfig.FREEPIK_API_KEY
+        if not api_key:
+            print("❌ Error: Freepik API key not found in environment variables")
+            print("Please set your Freepik API key in .env file:")
+            print("FREEPIK_API_KEY=your-freepik-api-key-here")
+            print("IMAGE_PROVIDER=freepik")
+            return
+    elif provider == "openai":
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            print("❌ Error: OPENAI_API_KEY environment variable not set")
+            print("Please set your OpenAI API key:")
+            print("export OPENAI_API_KEY='your-api-key-here'")
+            return
+    else:
+        print(f"❌ Error: Unsupported provider '{provider}'")
         return
     
     try:
@@ -57,8 +82,8 @@ def main():
         print(f"Sentiment: {prompt.source_analysis.sentiment}")
         
         # Generate image (this will make a real API call if uncommented)
-        print("\n🎨 Generating image...")
-        print("⚠️  Note: This would make a real API call to DALL-E 3")
+        print(f"\n🎨 Generating image using {provider}...")
+        print(f"⚠️  Note: This would make a real API call to {provider.upper()}")
         print("⚠️  Uncomment the lines below to test with real API")
         
         # Uncomment these lines to test with real API:
@@ -86,9 +111,14 @@ def main():
         
         print("\n🎉 Example completed successfully!")
         print("\nTo test with real API calls:")
-        print("1. Set OPENAI_API_KEY environment variable")
-        print("2. Uncomment the API call lines in this script")
-        print("3. Run the script again")
+        if provider == "freepik":
+            print("1. Ensure FREEPIK_API_KEY is set in .env file")
+            print("2. Uncomment the API call lines in this script")
+            print("3. Run the script again")
+        elif provider == "openai":
+            print("1. Set OPENAI_API_KEY environment variable")
+            print("2. Uncomment the API call lines in this script")
+            print("3. Run the script again")
         
     except Exception as e:
         print(f"❌ Error: {e}")

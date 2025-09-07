@@ -3,20 +3,18 @@ Speech-to-text processing using Vosk for on-device transcription.
 """
 
 import json
-import logging
-import wave
-import io
 from pathlib import Path
 from typing import Optional
 
 import vosk
-import numpy as np
 
 from ..models import AudioChunk, TranscriptionResult
 from ..config import SpeechConfig, SystemConfig, AudioConfig
-
-
-logger = logging.getLogger(__name__)
+from ..error_handler import ErrorCategory, ErrorSeverity, log_system_event
+from ..exceptions import (
+    SpeechProcessingError, ModelLoadError, TranscriptionError, LowConfidenceError
+)
+from ..decorators import handle_errors, log_operation, retry_on_error
 
 
 class SpeechProcessor:
@@ -41,42 +39,53 @@ class SpeechProcessor:
         """Get the default path for the Vosk model."""
         return str(SystemConfig.MODELS_DIR / SpeechConfig.MODEL_NAME)
     
+    @handle_errors(
+        category=ErrorCategory.SPEECH_PROCESSING,
+        severity=ErrorSeverity.CRITICAL,
+        raise_on_critical=True
+    )
+    @log_operation(level="INFO")
     def initialize_model(self) -> bool:
         """
         Load and initialize the Vosk model.
         
         Returns:
-            bool: True if initialization successful, False otherwise.
+            bool: True if initialization successful
+            
+        Raises:
+            ModelLoadError: If model loading fails
         """
-        try:
-            logger.info(f"Loading Vosk model from: {self.model_path}")
-            
-            # Check if model directory exists
-            if not Path(self.model_path).exists():
-                logger.error(f"Vosk model not found at: {self.model_path}")
-                logger.error("Please download the model using: python -m vosk download-model")
-                return False
-            
-            # Initialize Vosk model
-            self.model = vosk.Model(self.model_path)
-            self.recognizer = vosk.KaldiRecognizer(
-                self.model, 
-                AudioConfig.SAMPLE_RATE
+        log_system_event(f"Loading Vosk model from: {self.model_path}")
+        
+        # Check if model directory exists
+        if not Path(self.model_path).exists():
+            raise ModelLoadError(
+                f"Vosk model not found at: {self.model_path}. "
+                "Please download the model using: python -m vosk download-model",
+                component="SpeechProcessor",
+                additional_data={"model_path": self.model_path}
             )
-            
-            # Configure recognizer
-            self.recognizer.SetMaxAlternatives(1)
-            self.recognizer.SetWords(True)
-            
-            self.is_initialized = True
-            logger.info("Vosk model initialized successfully")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Failed to initialize Vosk model: {e}")
-            self.is_initialized = False
-            return False
+        
+        # Initialize Vosk model
+        self.model = vosk.Model(self.model_path)
+        self.recognizer = vosk.KaldiRecognizer(
+            self.model, 
+            AudioConfig.SAMPLE_RATE
+        )
+        
+        # Configure recognizer
+        self.recognizer.SetMaxAlternatives(1)
+        self.recognizer.SetWords(True)
+        
+        self.is_initialized = True
+        log_system_event("Vosk model initialized successfully")
+        return True
     
+    @handle_errors(
+        category=ErrorCategory.SPEECH_PROCESSING,
+        severity=ErrorSeverity.MEDIUM,
+        return_on_error=None
+    )
     def transcribe_audio(self, audio_chunk: AudioChunk) -> TranscriptionResult:
         """
         Transcribe an audio chunk to text.
@@ -86,51 +95,46 @@ class SpeechProcessor:
             
         Returns:
             TranscriptionResult: Transcription result with confidence score.
+            
+        Raises:
+            TranscriptionError: If transcription fails
         """
         if not self.is_initialized:
-            logger.warning("Speech processor not initialized")
-            return TranscriptionResult(
-                text="",
-                confidence=0.0,
-                timestamp=audio_chunk.timestamp,
-                is_valid=False
+            raise TranscriptionError(
+                "Speech processor not initialized",
+                component="SpeechProcessor",
+                additional_data={"model_path": self.model_path}
             )
         
-        try:
-            # Convert audio data to the format expected by Vosk
-            audio_data = self._prepare_audio_data(audio_chunk)
-            
-            # Process audio through recognizer
-            if self.recognizer.AcceptWaveform(audio_data):
-                result = json.loads(self.recognizer.Result())
-            else:
-                # Get partial result if no complete phrase detected
-                result = json.loads(self.recognizer.PartialResult())
-            
-            # Extract text and confidence
-            text = result.get('text', '').strip()
-            confidence = self._calculate_confidence(result)
-            
-            # Validate the transcription
-            is_valid = self.is_speech_detected(text, confidence)
-            
-            logger.debug(f"Transcribed: '{text}' (confidence: {confidence:.2f})")
-            
-            return TranscriptionResult(
-                text=text,
-                confidence=confidence,
-                timestamp=audio_chunk.timestamp,
-                is_valid=is_valid
-            )
-            
-        except Exception as e:
-            logger.error(f"Transcription failed: {e}")
-            return TranscriptionResult(
-                text="",
-                confidence=0.0,
-                timestamp=audio_chunk.timestamp,
-                is_valid=False
-            )
+        # Convert audio data to the format expected by Vosk
+        audio_data = self._prepare_audio_data(audio_chunk)
+        
+        # Process audio through recognizer
+        if self.recognizer.AcceptWaveform(audio_data):
+            result = json.loads(self.recognizer.Result())
+        else:
+            # Get partial result if no complete phrase detected
+            result = json.loads(self.recognizer.PartialResult())
+        
+        # Extract text and confidence
+        text = result.get('text', '').strip()
+        confidence = self._calculate_confidence(result)
+        
+        # Validate the transcription
+        is_valid = self.is_speech_detected(text, confidence)
+        
+        log_system_event(
+            f"Transcribed: '{text}' (confidence: {confidence:.2f})",
+            level="DEBUG",
+            is_valid=is_valid
+        )
+        
+        return TranscriptionResult(
+            text=text,
+            confidence=confidence,
+            timestamp=audio_chunk.timestamp,
+            is_valid=is_valid
+        )
     
     def _prepare_audio_data(self, audio_chunk: AudioChunk) -> bytes:
         """
@@ -192,29 +196,38 @@ class SpeechProcessor:
         """
         # Check confidence threshold
         if confidence < SpeechConfig.CONFIDENCE_THRESHOLD:
-            logger.debug(f"Low confidence transcription rejected: {confidence:.2f}")
+            log_system_event(
+                f"Low confidence transcription rejected: {confidence:.2f}",
+                level="DEBUG",
+                threshold=SpeechConfig.CONFIDENCE_THRESHOLD
+            )
             return False
         
         # Check text content
         if not text or len(text.strip()) == 0:
-            logger.debug("Empty transcription rejected")
+            log_system_event("Empty transcription rejected", level="DEBUG")
             return False
         
         # Check minimum word count (avoid single-word false positives)
         words = text.strip().split()
         if len(words) < 2:
-            logger.debug(f"Too few words in transcription: {len(words)}")
+            log_system_event(
+                f"Too few words in transcription: {len(words)}",
+                level="DEBUG",
+                word_count=len(words)
+            )
             return False
         
         # Check for common false positive patterns
         false_positives = ['uh', 'um', 'ah', 'er', 'hm', 'hmm']
         if all(word.lower() in false_positives for word in words):
-            logger.debug("Transcription contains only filler words")
+            log_system_event("Transcription contains only filler words", level="DEBUG")
             return False
         
-        logger.debug(f"Valid speech detected: '{text}'")
+        log_system_event(f"Valid speech detected: '{text}'", level="DEBUG")
         return True
     
+    @log_operation(level="INFO")
     def cleanup(self):
         """Clean up resources used by the speech processor."""
         if self.recognizer:
@@ -226,19 +239,4 @@ class SpeechProcessor:
             self.model = None
         
         self.is_initialized = False
-        logger.info("Speech processor cleaned up")
-
-
-class SpeechProcessorError(Exception):
-    """Custom exception for speech processing errors."""
-    pass
-
-
-class ModelLoadError(SpeechProcessorError):
-    """Exception raised when Vosk model fails to load."""
-    pass
-
-
-class TranscriptionError(SpeechProcessorError):
-    """Exception raised during audio transcription."""
-    pass
+        log_system_event("Speech processor cleaned up")

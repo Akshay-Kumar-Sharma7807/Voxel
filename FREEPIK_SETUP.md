@@ -2,6 +2,26 @@
 
 This guide will help you set up Freepik AI for image generation, which offers high-quality AI-generated images with competitive pricing.
 
+## Quick Start
+
+If you already have a Freepik API key:
+
+1. Add your API key to `.env` file:
+   ```
+   FREEPIK_API_KEY=your-freepik-api-key-here
+   IMAGE_PROVIDER=freepik
+   ```
+
+2. Test the setup:
+   ```bash
+   python examples/test_image_generator.py
+   ```
+
+3. Run the application:
+   ```bash
+   python voxel.py
+   ```
+
 ## Prerequisites
 
 1. **Freepik Account** (free or premium)
@@ -18,12 +38,18 @@ This guide will help you set up Freepik AI for image generation, which offers hi
 ### 2. Get API Access
 
 1. Visit [Freepik API Documentation](https://freepik.com/api)
-2. Apply for API access (may require approval)
-3. Once approved, you'll receive your API key
+2. Apply for API access through their developer portal
+3. You may need to:
+   - Provide information about your use case
+   - Wait for approval (usually 1-3 business days)
+   - Verify your account and payment method
+4. Once approved, you'll receive your API key in your developer dashboard
 
 ### 3. Set Environment Variables
 
-Create a `.env` file in your project root:
+**Option A: Using .env file (Recommended)**
+
+Create or edit the `.env` file in your project root:
 
 ```bash
 # Freepik Configuration
@@ -31,17 +57,26 @@ FREEPIK_API_KEY=your-freepik-api-key-here
 IMAGE_PROVIDER=freepik
 ```
 
-Or set them in your system:
+**Option B: System Environment Variables**
 
 ```bash
-# Windows
+# Windows (Command Prompt)
 set FREEPIK_API_KEY=your-freepik-api-key-here
 set IMAGE_PROVIDER=freepik
+
+# Windows (PowerShell)
+$env:FREEPIK_API_KEY="your-freepik-api-key-here"
+$env:IMAGE_PROVIDER="freepik"
 
 # Linux/Mac
 export FREEPIK_API_KEY=your-freepik-api-key-here
 export IMAGE_PROVIDER=freepik
 ```
+
+**Important Notes:**
+- Replace `your-freepik-api-key-here` with your actual API key from Freepik
+- Keep your API key secure and never commit it to version control
+- The API key format is typically: `FPSXa880f10bb79585e8a4a082cb5ce5e8ac` (example)
 
 ### 4. Test the Setup
 
@@ -147,22 +182,71 @@ Check current pricing: [Freepik Pricing](https://www.freepik.com/pricing)
 
 ## Troubleshooting
 
-### Authentication Issues
+### Common Setup Issues
+
+#### 1. API Key Not Working
+**Problem:** Getting authentication errors or "Invalid API key"
+
+**Solutions:**
 ```bash
-# Verify your API key is correct
+# Verify your API key format (should start with "FPSX")
+echo $FREEPIK_API_KEY
+
+# Test API key manually
 curl -H "X-Freepik-API-Key: YOUR_API_KEY" https://api.freepik.com/v1/ai/text-to-image
+
+# Check .env file format (no spaces around =)
+cat .env | grep FREEPIK
 ```
 
-### Rate Limit Issues
-- Check your plan's rate limits
-- Implement proper retry logic (already included)
-- Consider upgrading your plan for higher limits
+#### 2. Environment Variables Not Loading
+**Problem:** API key not being read from .env file
 
-### Image Quality Issues
-- Increase `num_inference_steps` (1-8)
-- Adjust `guidance_scale` (1-20)
-- Try different models (flux, flux-realism, mystic)
-- Experiment with different styles and lighting
+**Solutions:**
+```bash
+# Verify .env file exists in project root
+ls -la .env
+
+# Check file contents
+cat .env
+
+# Restart application after changing .env
+python voxel.py
+```
+
+#### 3. Provider Not Set to Freepik
+**Problem:** System still using OpenAI or other provider
+
+**Solutions:**
+```bash
+# Verify IMAGE_PROVIDER is set correctly
+grep IMAGE_PROVIDER .env
+
+# Should show: IMAGE_PROVIDER=freepik
+```
+
+### API-Related Issues
+
+#### Rate Limit Issues
+- Check your plan's rate limits in Freepik dashboard
+- Monitor usage to avoid hitting limits
+- Consider upgrading your plan for higher limits
+- The system includes automatic retry logic
+
+#### Image Quality Issues
+- Increase `num_inference_steps` (1-8) in config
+- Adjust `guidance_scale` (1-20) for prompt adherence
+- Try different models: flux, flux-realism, mystic
+- Experiment with different styles and lighting options
+
+#### Connection Issues
+```bash
+# Test internet connectivity to Freepik
+ping api.freepik.com
+
+# Check if firewall is blocking requests
+curl -I https://api.freepik.com/v1/ai/text-to-image
+```
 
 ## Example Usage
 

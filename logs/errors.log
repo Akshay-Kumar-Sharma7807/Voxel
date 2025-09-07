@@ -1,0 +1,21 @@
+2025-09-07 11:02:39,831 - voxel.performance.resource_manager - ERROR - resource_manager:get_disk_usage_mb:372 - Failed to get disk usage: module 'os' has no attribute 'statvfs'
+2025-09-07 11:02:57,837 - voxel.performance.resource_manager - ERROR - resource_manager:get_disk_usage_mb:372 - Failed to get disk usage: module 'os' has no attribute 'statvfs'
+2025-09-07 17:00:54,026 - voxel - ERROR - error_handler:log_system_event:147 - [SYSTEM] Failed initialize_model: Vosk model not found at: D:\Hackathons\Code Rush\models\vosk-model-small-en-us-0.15. Please download the model using: python -m vosk download-model | {'operation': 'SpeechProcessor.initialize_model'}
+2025-09-07 17:00:54,028 - voxel - CRITICAL - error_handler:log_error:124 - [SPEECH_PROCESSING] SpeechProcessor.initialize_model - Vosk model not found at: D:\Hackathons\Code Rush\models\vosk-model-small-en-us-0.15. Please download the model using: python -m vosk download-model | Data: {'model_path': 'D:\\Hackathons\\Code Rush\\models\\vosk-model-small-en-us-0.15'}
+2025-09-07 17:00:54,029 - voxel - CRITICAL - error_handler:log_error:125 - Traceback: Traceback (most recent call last):
+  File "D:\Hackathons\Code Rush\voxel\decorators.py", line 32, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Hackathons\Code Rush\voxel\decorators.py", line 99, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Hackathons\Code Rush\voxel\speech\processor.py", line 62, in initialize_model
+    raise ModelLoadError(
+voxel.exceptions.ModelLoadError: Vosk model not found at: D:\Hackathons\Code Rush\models\vosk-model-small-en-us-0.15. Please download the model using: python -m vosk download-model
+
+2025-09-07 17:00:54,029 - voxel - ERROR - error_handler:log_system_event:147 - [SYSTEM] Speech model error - this may be critical
+2025-09-07 17:00:54,030 - voxel.controller - ERROR - controller:initialize_components:165 - Component initialization failed: Vosk model not found at: D:\Hackathons\Code Rush\models\vosk-model-small-en-us-0.15. Please download the model using: python -m vosk download-model
+2025-09-07 17:00:54,031 - voxel.controller - ERROR - controller:run_continuous_loop:182 - Failed to initialize components, cannot start main loop
+2025-09-07 17:02:08,287 - voxel.performance.resource_manager - ERROR - resource_manager:get_disk_usage_mb:372 - Failed to get disk usage: module 'os' has no attribute 'statvfs'
+2025-09-07 17:03:57,151 - voxel.controller - ERROR - controller:initialize_components:165 - Component initialization failed: name 'logger' is not defined
+2025-09-07 17:03:57,151 - voxel.controller - ERROR - controller:run_continuous_loop:182 - Failed to initialize components, cannot start main loop

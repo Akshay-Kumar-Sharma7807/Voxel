@@ -1,0 +1,183 @@
+2025-09-07 10:27:19,172 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting combined_function | {'operation': 'Unknown.combined_function'}
+2025-09-07 10:27:19,173 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Completed combined_function | {'operation': 'Unknown.combined_function'}
+2025-09-07 10:41:48,784 - voxel.controller - INFO - controller:__init__:68 - MainController initialized
+2025-09-07 11:00:31,372 - voxel.performance.resource_manager - INFO - resource_manager:__init__:53 - ResourceManager initialized
+2025-09-07 11:00:51,579 - voxel.performance.memory_manager - INFO - memory_manager:_configure_gc:65 - Garbage collection configured for Raspberry Pi
+2025-09-07 11:00:51,580 - voxel.performance.memory_manager - INFO - memory_manager:__init__:54 - MemoryManager initialized
+2025-09-07 11:01:12,524 - voxel.performance.memory_manager - INFO - memory_manager:_configure_gc:65 - Garbage collection configured for Raspberry Pi
+2025-09-07 11:01:12,524 - voxel.performance.memory_manager - INFO - memory_manager:__init__:54 - MemoryManager initialized
+2025-09-07 11:01:34,760 - voxel.performance.memory_manager - INFO - memory_manager:_configure_gc:65 - Garbage collection configured for Raspberry Pi
+2025-09-07 11:01:34,760 - voxel.performance.memory_manager - INFO - memory_manager:__init__:54 - MemoryManager initialized
+2025-09-07 11:01:34,760 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting start_management | {'operation': 'MemoryManager.start_management'}
+2025-09-07 11:01:34,761 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory management...
+2025-09-07 11:01:34,761 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory cleanup...
+2025-09-07 11:01:34,804 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory cleanup completed: 111 objects collected, 0 buffers cleaned, 0.0MB freed
+2025-09-07 11:01:34,806 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory management started successfully
+2025-09-07 11:01:34,806 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Completed start_management | {'operation': 'MemoryManager.start_management'}
+2025-09-07 11:01:34,808 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Stopping memory management...
+2025-09-07 11:01:34,808 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory cleanup...
+2025-09-07 11:01:34,851 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory cleanup completed: 0 objects collected, 0 buffers cleaned, 0.0MB freed
+2025-09-07 11:01:34,851 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory management stopped
+2025-09-07 11:02:39,817 - voxel.performance.resource_manager - INFO - resource_manager:__init__:53 - ResourceManager initialized
+2025-09-07 11:02:39,818 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting start_monitoring | {'operation': 'ResourceManager.start_monitoring'}
+2025-09-07 11:02:39,819 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting resource monitoring...
+2025-09-07 11:02:39,820 - voxel.performance.resource_manager - INFO - resource_manager:_monitoring_loop:99 - Resource monitoring loop started
+2025-09-07 11:02:39,820 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Resource monitoring started successfully
+2025-09-07 11:02:39,821 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting resource cleanup...
+2025-09-07 11:02:39,822 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Completed start_monitoring | {'operation': 'ResourceManager.start_monitoring'}
+2025-09-07 11:02:39,831 - voxel.performance.resource_manager - ERROR - resource_manager:get_disk_usage_mb:372 - Failed to get disk usage: module 'os' has no attribute 'statvfs'
+2025-09-07 11:02:39,982 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Resource cleanup completed: 0 files removed, 0.0MB memory freed, 0.0MB disk freed
+2025-09-07 11:02:41,836 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Forcing immediate resource cleanup...
+2025-09-07 11:02:41,837 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting resource cleanup...
+2025-09-07 11:02:42,017 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Resource cleanup completed: 0 files removed, 0.0MB memory freed, 0.0MB disk freed
+2025-09-07 11:02:42,019 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Stopping resource monitoring...
+2025-09-07 11:02:47,026 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Resource monitoring stopped
+2025-09-07 11:02:47,029 - voxel.performance.performance_monitor - INFO - performance_monitor:__init__:66 - PerformanceMonitor initialized
+2025-09-07 11:02:47,030 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting start_monitoring | {'operation': 'PerformanceMonitor.start_monitoring'}
+2025-09-07 11:02:47,033 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting performance monitoring...
+2025-09-07 11:02:47,035 - voxel.performance.performance_monitor - INFO - performance_monitor:_monitoring_loop:113 - Performance monitoring loop started
+2025-09-07 11:02:47,035 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Performance monitoring started successfully
+2025-09-07 11:02:47,040 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Completed start_monitoring | {'operation': 'PerformanceMonitor.start_monitoring'}
+2025-09-07 11:02:47,041 - voxel.performance.performance_monitor - INFO - performance_monitor:add_optimization_callback:364 - Added optimization callback: optimization_callback
+2025-09-07 11:02:50,562 - voxel.performance.resource_manager - INFO - resource_manager:_monitoring_loop:125 - Resource monitoring loop stopped
+2025-09-07 11:02:54,135 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Stopping performance monitoring...
+2025-09-07 11:02:55,654 - voxel.performance.performance_monitor - INFO - performance_monitor:_monitoring_loop:136 - Performance monitoring loop stopped
+2025-09-07 11:02:55,656 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Performance monitoring stopped
+2025-09-07 11:02:55,659 - voxel.performance.memory_manager - INFO - memory_manager:_configure_gc:65 - Garbage collection configured for Raspberry Pi
+2025-09-07 11:02:55,660 - voxel.performance.memory_manager - INFO - memory_manager:__init__:54 - MemoryManager initialized
+2025-09-07 11:02:55,661 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting start_management | {'operation': 'MemoryManager.start_management'}
+2025-09-07 11:02:55,663 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory management...
+2025-09-07 11:02:55,664 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory cleanup...
+2025-09-07 11:02:55,682 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory cleanup completed: 0 objects collected, 0 buffers cleaned, 0.0MB freed
+2025-09-07 11:02:55,684 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory management started successfully
+2025-09-07 11:02:55,686 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Completed start_management | {'operation': 'MemoryManager.start_management'}
+2025-09-07 11:02:55,697 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Forcing immediate memory cleanup...
+2025-09-07 11:02:55,699 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory cleanup...
+2025-09-07 11:02:55,710 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory cleanup completed: 0 objects collected, 0 buffers cleaned, 0.0MB freed
+2025-09-07 11:02:55,711 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Applying Raspberry Pi memory optimizations...
+2025-09-07 11:02:55,712 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory cleanup...
+2025-09-07 11:02:55,714 - voxel.performance.memory_manager - WARNING - memory_manager:_cleanup_old_image_cache:225 - Image cache memory usage high: 62.2MB
+2025-09-07 11:02:55,716 - voxel.performance.memory_manager - INFO - memory_manager:_force_cleanup_image_cache:272 - Force cleaned 1 cached images
+2025-09-07 11:02:55,728 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory cleanup completed: 0 objects collected, 5 buffers cleaned, 0.0MB freed
+2025-09-07 11:02:55,729 - voxel.performance.memory_manager - INFO - memory_manager:optimize_for_raspberry_pi:413 - Raspberry Pi memory optimizations applied
+2025-09-07 11:02:55,730 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Stopping memory management...
+2025-09-07 11:02:55,732 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory cleanup...
+2025-09-07 11:02:55,742 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory cleanup completed: 0 objects collected, 0 buffers cleaned, 0.0MB freed
+2025-09-07 11:02:55,743 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory management stopped
+2025-09-07 11:02:55,747 - voxel.performance.resource_manager - INFO - resource_manager:__init__:53 - ResourceManager initialized
+2025-09-07 11:02:55,748 - voxel.performance.performance_monitor - INFO - performance_monitor:__init__:66 - PerformanceMonitor initialized
+2025-09-07 11:02:55,749 - voxel.performance.memory_manager - INFO - memory_manager:_configure_gc:65 - Garbage collection configured for Raspberry Pi
+2025-09-07 11:02:55,750 - voxel.performance.memory_manager - INFO - memory_manager:__init__:54 - MemoryManager initialized
+2025-09-07 11:02:55,751 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting start_monitoring | {'operation': 'ResourceManager.start_monitoring'}
+2025-09-07 11:02:55,753 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting resource monitoring...
+2025-09-07 11:02:55,754 - voxel.performance.resource_manager - INFO - resource_manager:_monitoring_loop:99 - Resource monitoring loop started
+2025-09-07 11:02:55,755 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Resource monitoring started successfully
+2025-09-07 11:02:55,756 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting resource cleanup...
+2025-09-07 11:02:55,757 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Completed start_monitoring | {'operation': 'ResourceManager.start_monitoring'}
+2025-09-07 11:02:55,769 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting start_monitoring | {'operation': 'PerformanceMonitor.start_monitoring'}
+2025-09-07 11:02:55,770 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting performance monitoring...
+2025-09-07 11:02:55,771 - voxel.performance.performance_monitor - INFO - performance_monitor:_monitoring_loop:113 - Performance monitoring loop started
+2025-09-07 11:02:55,771 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Performance monitoring started successfully
+2025-09-07 11:02:55,773 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Completed start_monitoring | {'operation': 'PerformanceMonitor.start_monitoring'}
+2025-09-07 11:02:55,774 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting start_management | {'operation': 'MemoryManager.start_management'}
+2025-09-07 11:02:55,775 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory management...
+2025-09-07 11:02:55,776 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory cleanup...
+2025-09-07 11:02:55,785 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory cleanup completed: 0 objects collected, 0 buffers cleaned, 0.0MB freed
+2025-09-07 11:02:55,787 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory management started successfully
+2025-09-07 11:02:55,788 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Completed start_management | {'operation': 'MemoryManager.start_management'}
+2025-09-07 11:02:55,790 - voxel.performance.performance_monitor - INFO - performance_monitor:add_optimization_callback:364 - Added optimization callback: integrated_optimization_callback
+2025-09-07 11:02:55,954 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Resource cleanup completed: 0 files removed, 0.0MB memory freed, 0.0MB disk freed
+2025-09-07 11:02:57,837 - voxel.performance.resource_manager - ERROR - resource_manager:get_disk_usage_mb:372 - Failed to get disk usage: module 'os' has no attribute 'statvfs'
+2025-09-07 11:02:57,841 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Stopping performance monitoring...
+2025-09-07 11:03:01,805 - voxel.performance.performance_monitor - INFO - performance_monitor:_monitoring_loop:136 - Performance monitoring loop stopped
+2025-09-07 11:03:01,806 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Performance monitoring stopped
+2025-09-07 11:03:01,808 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Stopping memory management...
+2025-09-07 11:03:01,809 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting memory cleanup...
+2025-09-07 11:03:01,819 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory cleanup completed: 0 objects collected, 0 buffers cleaned, 0.0MB freed
+2025-09-07 11:03:01,820 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Memory management stopped
+2025-09-07 11:03:01,822 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Stopping resource monitoring...
+2025-09-07 11:03:05,956 - voxel.performance.resource_manager - INFO - resource_manager:_monitoring_loop:125 - Resource monitoring loop stopped
+2025-09-07 11:03:05,958 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Resource monitoring stopped
+2025-09-07 17:00:54,021 - voxel.performance.resource_manager - INFO - resource_manager:__init__:53 - ResourceManager initialized
+2025-09-07 17:00:54,022 - voxel.performance.performance_monitor - INFO - performance_monitor:__init__:66 - PerformanceMonitor initialized
+2025-09-07 17:00:54,022 - voxel.performance.memory_manager - INFO - memory_manager:_configure_gc:65 - Garbage collection configured for Raspberry Pi
+2025-09-07 17:00:54,022 - voxel.performance.memory_manager - INFO - memory_manager:__init__:54 - MemoryManager initialized
+2025-09-07 17:00:54,023 - voxel.performance.performance_monitor - INFO - performance_monitor:add_optimization_callback:364 - Added optimization callback: performance_optimization_callback
+2025-09-07 17:00:54,023 - voxel.controller - INFO - controller:__init__:77 - MainController initialized
+2025-09-07 17:00:54,023 - voxel.controller - INFO - controller:run_continuous_loop:178 - Starting Voxel continuous operation loop...
+2025-09-07 17:00:54,023 - voxel.controller - INFO - controller:initialize_components:131 - Initializing system components...
+2025-09-07 17:00:54,024 - voxel.controller - INFO - controller:initialize_components:135 - Initializing audio capture...
+2025-09-07 17:00:54,025 - voxel.controller - INFO - controller:initialize_components:139 - Initializing speech processor...
+2025-09-07 17:00:54,025 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting initialize_model | {'operation': 'SpeechProcessor.initialize_model'}
+2025-09-07 17:00:54,025 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Loading Vosk model from: D:\Hackathons\Code Rush\models\vosk-model-small-en-us-0.15
+2025-09-07 17:00:54,026 - voxel - ERROR - error_handler:log_system_event:147 - [SYSTEM] Failed initialize_model: Vosk model not found at: D:\Hackathons\Code Rush\models\vosk-model-small-en-us-0.15. Please download the model using: python -m vosk download-model | {'operation': 'SpeechProcessor.initialize_model'}
+2025-09-07 17:00:54,028 - voxel - CRITICAL - error_handler:log_error:124 - [SPEECH_PROCESSING] SpeechProcessor.initialize_model - Vosk model not found at: D:\Hackathons\Code Rush\models\vosk-model-small-en-us-0.15. Please download the model using: python -m vosk download-model | Data: {'model_path': 'D:\\Hackathons\\Code Rush\\models\\vosk-model-small-en-us-0.15'}
+2025-09-07 17:00:54,029 - voxel - CRITICAL - error_handler:log_error:125 - Traceback: Traceback (most recent call last):
+  File "D:\Hackathons\Code Rush\voxel\decorators.py", line 32, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Hackathons\Code Rush\voxel\decorators.py", line 99, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Hackathons\Code Rush\voxel\speech\processor.py", line 62, in initialize_model
+    raise ModelLoadError(
+voxel.exceptions.ModelLoadError: Vosk model not found at: D:\Hackathons\Code Rush\models\vosk-model-small-en-us-0.15. Please download the model using: python -m vosk download-model
+
+2025-09-07 17:00:54,029 - voxel - ERROR - error_handler:log_system_event:147 - [SYSTEM] Speech model error - this may be critical
+2025-09-07 17:00:54,030 - voxel.controller - ERROR - controller:initialize_components:165 - Component initialization failed: Vosk model not found at: D:\Hackathons\Code Rush\models\vosk-model-small-en-us-0.15. Please download the model using: python -m vosk download-model
+2025-09-07 17:00:54,031 - voxel.controller - ERROR - controller:run_continuous_loop:182 - Failed to initialize components, cannot start main loop
+2025-09-07 17:01:43,754 - voxel.performance.resource_manager - INFO - resource_manager:__init__:53 - ResourceManager initialized
+2025-09-07 17:01:43,756 - voxel.performance.performance_monitor - INFO - performance_monitor:__init__:66 - PerformanceMonitor initialized
+2025-09-07 17:01:43,761 - voxel.performance.memory_manager - INFO - memory_manager:_configure_gc:65 - Garbage collection configured for Raspberry Pi
+2025-09-07 17:01:43,763 - voxel.performance.memory_manager - INFO - memory_manager:__init__:54 - MemoryManager initialized
+2025-09-07 17:01:43,764 - voxel.performance.performance_monitor - INFO - performance_monitor:add_optimization_callback:364 - Added optimization callback: performance_optimization_callback
+2025-09-07 17:01:43,767 - voxel.controller - INFO - controller:__init__:77 - MainController initialized
+2025-09-07 17:02:06,312 - voxel.performance.resource_manager - INFO - resource_manager:__init__:53 - ResourceManager initialized
+2025-09-07 17:02:06,316 - voxel.performance.performance_monitor - INFO - performance_monitor:__init__:66 - PerformanceMonitor initialized
+2025-09-07 17:02:06,319 - voxel.performance.memory_manager - INFO - memory_manager:_configure_gc:65 - Garbage collection configured for Raspberry Pi
+2025-09-07 17:02:06,321 - voxel.performance.memory_manager - INFO - memory_manager:__init__:54 - MemoryManager initialized
+2025-09-07 17:02:06,322 - voxel.performance.performance_monitor - INFO - performance_monitor:add_optimization_callback:364 - Added optimization callback: performance_optimization_callback
+2025-09-07 17:02:06,328 - voxel.controller - INFO - controller:__init__:77 - MainController initialized
+2025-09-07 17:02:08,287 - voxel.performance.resource_manager - ERROR - resource_manager:get_disk_usage_mb:372 - Failed to get disk usage: module 'os' has no attribute 'statvfs'
+2025-09-07 17:03:56,356 - voxel.performance.resource_manager - INFO - resource_manager:__init__:53 - ResourceManager initialized
+2025-09-07 17:03:56,356 - voxel.performance.performance_monitor - INFO - performance_monitor:__init__:66 - PerformanceMonitor initialized
+2025-09-07 17:03:56,357 - voxel.performance.memory_manager - INFO - memory_manager:_configure_gc:65 - Garbage collection configured for Raspberry Pi
+2025-09-07 17:03:56,357 - voxel.performance.memory_manager - INFO - memory_manager:__init__:54 - MemoryManager initialized
+2025-09-07 17:03:56,357 - voxel.performance.performance_monitor - INFO - performance_monitor:add_optimization_callback:364 - Added optimization callback: performance_optimization_callback
+2025-09-07 17:03:56,358 - voxel.controller - INFO - controller:__init__:77 - MainController initialized
+2025-09-07 17:03:56,358 - voxel.controller - INFO - controller:run_continuous_loop:178 - Starting Voxel continuous operation loop...
+2025-09-07 17:03:56,359 - voxel.controller - INFO - controller:initialize_components:131 - Initializing system components...
+2025-09-07 17:03:56,360 - voxel.controller - INFO - controller:initialize_components:135 - Initializing audio capture...
+2025-09-07 17:03:56,360 - voxel.controller - INFO - controller:initialize_components:139 - Initializing speech processor...
+2025-09-07 17:03:56,361 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Starting initialize_model | {'operation': 'SpeechProcessor.initialize_model'}
+2025-09-07 17:03:56,361 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Loading Vosk model from: D:\Hackathons\Code Rush\models\vosk-model-small-en-us-0.15
+2025-09-07 17:03:57,147 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Vosk model initialized successfully
+2025-09-07 17:03:57,148 - voxel - INFO - error_handler:log_system_event:147 - [SYSTEM] Completed initialize_model | {'operation': 'SpeechProcessor.initialize_model'}
+2025-09-07 17:03:57,149 - voxel.controller - INFO - controller:initialize_components:146 - Initializing text analyzer...
+2025-09-07 17:03:57,149 - voxel.controller - INFO - controller:initialize_components:150 - Initializing prompt crafter...
+2025-09-07 17:03:57,150 - voxel.controller - INFO - controller:initialize_components:154 - Initializing image generator...
+2025-09-07 17:03:57,151 - voxel.controller - ERROR - controller:initialize_components:165 - Component initialization failed: name 'logger' is not defined
+2025-09-07 17:03:57,151 - voxel.controller - ERROR - controller:run_continuous_loop:182 - Failed to initialize components, cannot start main loop
+2025-09-07 17:05:11,465 - voxel.generation.generator - INFO - generator:__init__:52 - ImageGenerator initialized successfully with freepik provider
+2025-09-07 17:05:11,470 - voxel.generation.generator - INFO - generator:__init__:52 - ImageGenerator initialized successfully with freepik provider
+2025-09-07 17:05:11,473 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250905_083914.png
+2025-09-07 17:05:11,481 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250905_083924.png
+2025-09-07 17:05:11,482 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250905_083933.png
+2025-09-07 17:05:11,483 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060340.png
+2025-09-07 17:05:11,483 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060415.png
+2025-09-07 17:05:11,484 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060449.png
+2025-09-07 17:05:11,485 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060523.png
+2025-09-07 17:05:11,486 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060557.png
+2025-09-07 17:05:11,487 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060630.png
+2025-09-07 17:05:11,487 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060704.png
+2025-09-07 17:05:11,488 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060737.png
+2025-09-07 17:05:11,489 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060811.png
+2025-09-07 17:05:11,491 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060844.png
+2025-09-07 17:05:11,492 - voxel.generation.generator - INFO - generator:cleanup_old_images:470 - Removed old image: D:\Hackathons\Code Rush\generated_images\voxel_art_20250906_060859.png
+2025-09-07 17:05:11,493 - voxel.generation.generator - INFO - generator:cleanup_old_images:472 - Cleaned up 14 old images
+2025-09-07 17:05:46,183 - voxel.performance.resource_manager - INFO - resource_manager:__init__:53 - ResourceManager initialized
+2025-09-07 17:05:46,186 - voxel.performance.performance_monitor - INFO - performance_monitor:__init__:66 - PerformanceMonitor initialized
+2025-09-07 17:05:46,188 - voxel.performance.memory_manager - INFO - memory_manager:_configure_gc:65 - Garbage collection configured for Raspberry Pi
+2025-09-07 17:05:46,190 - voxel.performance.memory_manager - INFO - memory_manager:__init__:54 - MemoryManager initialized
+2025-09-07 17:05:46,192 - voxel.performance.performance_monitor - INFO - performance_monitor:add_optimization_callback:364 - Added optimization callback: performance_optimization_callback
+2025-09-07 17:05:46,195 - voxel.controller - INFO - controller:__init__:77 - MainController initialized
